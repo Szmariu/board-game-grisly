@@ -1,6 +1,33 @@
 ### Libraries
 library(tidyverse)
 library(ggplot2)
+library(ggthemes)
+library(ggrepel)
+library(cowplot)
+library(gganimate)
+library(ggridges)
+library(viridis)
+library(ggtech) # For the airbnb theme
+library(extrafont) # To add the font for Airbnb theme
+library(GGally) # Grapihical correlogram
+
+# Download this fonts and install manually
+# https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Medium%203.46.45%20PM.ttf
+# https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Bold%203.46.45%20PM.ttf
+
+# Import all fonts, takes a few minutes but removes the annoying warnings
+# font_import()
+# font_import(pattern = 'Circular', prompt=FALSE)
+# loadfonts(device = "win")
+
+# Lets set the theme to this nice one from Airbnb
+# Colors: c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051")
+theme_set(theme_airbnb_fancy())
+pink = "#FF5A5F"
+orange = "#FFB400"
+blueGreen = "#007A87"
+flesh = "#FFAA91"
+purple = "#7B0051"
 
 ### Import data
 reviews <- 'data/bgg-13m-reviews.csv' %>%
