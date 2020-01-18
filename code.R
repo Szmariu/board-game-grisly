@@ -86,3 +86,116 @@ games <- games %>%
     "wishing", 
     "yearpublished"
   )
+
+
+# Basic filters
+# Lets remove some outliers to make life easier
+# Some outliers are ok, eg. for most popular games the "wishing" will be very high
+
+games %>%
+  ggplot(aes(x = yearpublished)) +
+  geom_density()
+
+games %>%
+  ggplot(aes(x = maxplayers)) +
+  geom_density()
+
+games %>%
+  ggplot(aes(x = maxplaytime)) +
+  geom_density()
+
+games %>%
+  ggplot(aes(x = minplaytime)) +
+  geom_density()
+
+games %>%
+  ggplot(aes(x = playingtime)) +
+  geom_density()
+
+games <- games %>% 
+  filter(yearpublished > 1950,
+         maxplayers < 20,
+         maxplaytime < 600,
+         maxplaytime < 600,
+         playingtime < 600,
+         suggested_num_players < 20)
+
+scale_color_tech()
+
+# Create binary variables 
+# A game can have multiple main categories, so we can't create one column
+games$isAbstract <- as.integer( !is.na(games$Abstract_Rank) )
+games$isChildrens <- as.integer( !is.na(games$Childrens_Rank) )
+games$isFamily <- as.integer( !is.na(games$Family_Rank) )
+games$isParty <- as.integer( !is.na(games$Party_Rank) )
+games$isThematic <- as.integer( !is.na(games$Thematic_Rank) )
+games$isWarGame <- as.integer( !is.na(games$War_Game_Rank) )
+
+
+# Questions:
+# 
+
+
+
+plot <- games %>%
+  select( "Rank",
+         "Ratings_average",
+         "Complexity",
+         "Geekscore",
+         "minage",               
+         "minplayers",           
+         "minplaytime",          
+         "playingtime",         
+         "Ratings_std_dev",   
+         "usersrated",           
+         "yearpublished") %>%
+  ggpairs(progress = TRUE,
+          axisLabels = 'none') + 
+  theme(text = element_text(size = 10))
+
+# Takes a long while to save
+plot %>% 
+  ggsave('001.jpg', .)
+
+
+# Year
+games %>%
+  ggplot(aes(x = yearpublished)) +
+  geom_density(color = orange, fill = orange, alpha = 0.5)   
+
+# Average ratings vs year (>2000)
+plot <- games %>% 
+  filter(yearpublished > 2009) %>%
+  ggplot(aes(x = Ratings_average)) +
+  geom_density(color = orange, fill = orange, alpha = 0.5) +  
+  labs(title = 'Year: {floor(frame_time)}', x = 'Ratings', y = 'Density') +
+  transition_time(yearpublished) +
+  ease_aes('linear') 
+
+plot %>% animate(width = 1200, height = 800)
+
+anim_save('001.gif', path = paste0(getwd(), '/plots'))
+
+
+
+# Average ratings vs year (>2000)
+plot <- games %>% 
+  filter(yearpublished > 1999,
+         Complexity > 0.5) %>%
+  ggplot(aes(x = Complexity)) +
+  geom_histogram(color = pink, fill = pink, alpha = 0.5) +  
+  labs(title = 'Year: {floor(frame_time)}', x = 'Complexity', y = 'Count') +
+  transition_time(yearpublished) +
+  ease_aes('linear') 
+
+plot %>% animate(width = 1200, height = 800)
+
+anim_save('002.gif', path = paste0(getwd(), '/plots'))
+
+
+
+
+
+
+
+
