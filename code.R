@@ -141,52 +141,104 @@ games$isWarGame <- as.integer( !is.na(games$War_Game_Rank) )
 
 
 # Questions:
-# 
+# is complexity foavured?
+# Does time increase with complexity?
+# Rank vs popularity
 
 
+# Lets look at the dataset
+games %>%
+  select( "Rank",
+          "Ratings_average") %>%
+  ggpairs(progress = TRUE,
+          axisLabels = 'none',
+          mapping = aes(color = games$ComplexityBinned),
+          legend = 1) + 
+  theme(text = element_text(size = 10))
+
+my_dens <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_density_ridges(aes(y = games$ComplexityBinned, fill = games$ComplexityBinned), scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA ) + 
+    scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051")) 
+}
+
+my_dots <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.1) + 
+    scale_color_tech(theme="airbnb") 
+}
 
 plot <- games %>%
   select( "Rank",
-         "Ratings_average",
-         "Complexity",
-         "Geekscore",
-         "minage",               
-         "minplayers",           
-         "minplaytime",          
-         "playingtime",         
-         "Ratings_std_dev",   
-         "usersrated",           
-         "yearpublished") %>%
-  ggpairs(progress = TRUE,
-          axisLabels = 'none') + 
-  theme(text = element_text(size = 10))
+          "Ratings_average",
+          "Complexity",
+          "yearpublished",
+          "usersrated",
+          "playingtime",   
+          "usersrated") %>%
+  ggpairs(
+    mapping = aes(color = games$ComplexityBinned, fill = games$ComplexityBinned),
+    diag = list(continuous = my_dens),
+    lower = list(continuous = my_dots),
+    progress = TRUE,
+    axisLabels = 'none',
+    legend = 1) + 
+  theme(text = element_text(size = 10)) +
+  labs(title = '')
 
-# Takes a long while to save
 plot %>% 
   ggsave('001.jpg', .)
 
 
-# Year
-games %>%
-  ggplot(aes(x = yearpublished)) +
-  geom_density(color = orange, fill = orange, alpha = 0.5)   
 
-# Average ratings vs year (>2000)
+
+# Boardgames per year
+plot <- games %>%
+  ggplot(aes(x = yearpublished)) +
+  geom_density(color = orange, fill = orange, alpha = 0.5) +
+  labs(title = 'Board games published per year', x = 'Year', y = 'Density')
+
+plot %>% 
+  ggsave('002.jpg', . , path = paste0(getwd(), '/plots'))
+
+
+
+
+
+# Average ratings vs year (>2009)
 plot <- games %>% 
   filter(yearpublished > 2009) %>%
   ggplot(aes(x = Ratings_average)) +
   geom_density(color = orange, fill = orange, alpha = 0.5) +  
-  labs(title = 'Year: {floor(frame_time)}', x = 'Ratings', y = 'Density') +
+  labs(title = 'Ratings of games published in: {floor(frame_time)}', x = 'Ratings', y = 'Density') +
   transition_time(yearpublished) +
   ease_aes('linear') 
 
 plot %>% animate(width = 1200, height = 800)
 
-anim_save('001.gif', path = paste0(getwd(), '/plots'))
+anim_save('003.gif', path = paste0(getwd(), '/plots'))
 
 
 
-# Average ratings vs year (>2000)
+# Complexity vs rating
+
+plot <- games %>%
+  ggplot(aes(x = Ratings_average, y = ComplexityBinned, fill = ComplexityBinned)) +
+  geom_density_ridges(scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA) + 
+  scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051")) +
+  scale_x_continuous(limits = c(3, 9.3)) +
+  labs(title = 'How does the complexity of the game infuence the ratings?',
+       x = 'Ratings',
+       y = 'Complexity of the game',
+       fill = 'Complexity')
+
+plot %>% 
+  ggsave('004.jpg', . , path = paste0(getwd(), '/plots'))
+
+
+
+
+# 
 plot <- games %>% 
   filter(yearpublished > 1999,
          Complexity > 0.5) %>%
@@ -198,7 +250,7 @@ plot <- games %>%
 
 plot %>% animate(width = 1200, height = 800)
 
-anim_save('002.gif', path = paste0(getwd(), '/plots'))
+anim_save('003.gif', path = paste0(getwd(), '/plots'))
 
 
 
