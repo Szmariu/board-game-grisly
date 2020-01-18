@@ -76,9 +76,7 @@ games <- games %>%
     "owned",         
     "playingtime",                 
     "name" = "primary",                     
-    "Ratings_std_dev" = "stddev",                      
-    "suggested_num_players", 
-    "suggested_playerage",         
+    "Ratings_std_dev" = "stddev",         
     "thumbnail",          
     "trading",                      
     "usersrated",        
@@ -117,10 +115,20 @@ games <- games %>%
          maxplayers < 20,
          maxplaytime < 600,
          maxplaytime < 600,
-         playingtime < 600,
-         suggested_num_players < 20)
+         playingtime < 600)
 
-scale_color_tech()
+# Creat a binned complexity
+games %>%
+  ggplot(aes(x = Complexity)) +
+  geom_histogram(bins = 60)
+
+# Values are from 1-5, but there is very little after 4.5
+games$ComplexityBinned <- games$Complexity %>% 
+  cut(
+    breaks = c(-Inf, 1.5, 2.5, 3.25, Inf),
+    labels = c(1, 2, 3, 4))
+
+table(games$ComplexityBinned)
 
 # Create binary variables 
 # A game can have multiple main categories, so we can't create one column
