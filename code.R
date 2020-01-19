@@ -381,14 +381,6 @@ plot %>%
 
 
 
-
-# Add something with ratings
-# Use  geom_point(shape = ".")
-
-
-
-
-
 # 007 rank vs category
 games$isTop <- ifelse(games$Rank < 300, 1, 0)
 
@@ -434,6 +426,25 @@ plot %>%
 games %>%
   filter(quantileAbstract < 0.01 ) %>%
   {paste0(.$name, ' ' , .$Rank)}
+
+
+
+
+
+
+
+# Add something with ratings
+# Use  geom_point(shape = ".")
+
+
+
+
+
+
+
+
+
+
 
 
 

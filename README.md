@@ -1,2 +1,3 @@
 # board-game-grisly
-Exploratory data analysis on the Board Game Geek database. 17k games, 13M reviews.
+What does it take to be in the 1% of Board Game Geek ranking? The answer may surpise you...
+Exploratory data analysis on 17k games and 13M reviews.
