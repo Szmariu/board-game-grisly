@@ -192,7 +192,7 @@ find_lowest_quantile <- function(row, output) {
     lowest == strategy ~ 'Strategy',
     lowest == thematic ~ 'Thematic',
     lowest == war ~ 'War Game',
-    lowest == NA ~ 'Other'
+    is.na(lowest) ~ 'Other'
   ) %>%
     return()
 }
@@ -202,8 +202,9 @@ games$cat <- games %>%
   apply(1, find_lowest_quantile) %>%
   as.factor()
 
-# A nice distribution
+# A nice distribution, a lot of other 
 games$cat %>% table()
+
 
 # Questions:
 # Does time increase with complexity?
