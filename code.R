@@ -141,12 +141,11 @@ games$isWarGame <- as.integer( !is.na(games$War_Game_Rank) )
 
 
 # Questions:
-# is complexity foavured?
 # Does time increase with complexity?
 # Rank vs popularity
 
 
-# Lets look at the dataset
+# 001 - Lets look at the dataset
 games %>%
   select( "Rank",
           "Ratings_average") %>%
@@ -171,7 +170,6 @@ my_dots <- function(data, mapping, ...) {
 plot <- games %>%
   select( "Rank",
           "Ratings_average",
-          "Complexity",
           "yearpublished",
           "usersrated",
           "playingtime",   
@@ -187,25 +185,33 @@ plot <- games %>%
   labs(title = '')
 
 plot %>% 
-  ggsave('001.jpg', .)
+  ggsave('001.jpg', 
+         .,
+         path = paste0(getwd(), '/plots'),
+         height = 9,
+         width = 16)
 
 
 
 
-# Boardgames per year
+# 002 - Boardgames per year
 plot <- games %>%
   ggplot(aes(x = yearpublished)) +
   geom_density(color = orange, fill = orange, alpha = 0.5) +
   labs(title = 'Board games published per year', x = 'Year', y = 'Density')
 
 plot %>% 
-  ggsave('002.jpg', . , path = paste0(getwd(), '/plots'))
+  ggsave('002.jpg', 
+         . ,
+         path = paste0(getwd(), '/plots'),
+         width = 14,
+         height = 13)
 
 
 
 
 
-# Average ratings vs year (>2009)
+# 003 - Average ratings vs year (>2009)
 plot <- games %>% 
   filter(yearpublished > 2009) %>%
   ggplot(aes(x = Ratings_average)) +
@@ -214,26 +220,76 @@ plot <- games %>%
   transition_time(yearpublished) +
   ease_aes('linear') 
 
-plot %>% animate(width = 1200, height = 800)
+plot %>% animate(width = 1920, height = 1080)
 
 anim_save('003.gif', path = paste0(getwd(), '/plots'))
 
 
 
-# Complexity vs rating
-
+# 004 - Complexity vs rating
 plot <- games %>%
   ggplot(aes(x = Ratings_average, y = ComplexityBinned, fill = ComplexityBinned)) +
   geom_density_ridges(scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA) + 
   scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051")) +
   scale_x_continuous(limits = c(3, 9.3)) +
-  labs(title = 'How does the complexity of the game infuence the ratings?',
+  labs(title = 'Does the complexity of the game infuence the ratings?',
        x = 'Ratings',
        y = 'Complexity of the game',
        fill = 'Complexity')
 
 plot %>% 
-  ggsave('004.jpg', . , path = paste0(getwd(), '/plots'))
+  ggsave('004.jpg', 
+         .,
+         path = paste0(getwd(), '/plots'),
+         width = 14,
+         height = 13)
+
+
+
+
+# 005 - Rank vs average ratings
+plot <- games %>% 
+  ggplot(aes(x = Ratings_average, y = Rank)) +
+  geom_point(aes(colour = Rank), alpha = 0.2) +
+  scale_color_gradient(low = orange, high = purple) +
+  labs(title = 'Does the average rating influence the final rank?',
+       subtitle = 'Chicken Drumstick distribution',
+       x = 'Average rating',
+       y = 'Overall rank') +
+  theme(legend.position = 'none') +
+  scale_y_reverse()
+
+plot %>% 
+  ggsave('005.jpg', 
+         . ,
+         path = paste0(getwd(), '/plots'),  
+         height = 7,
+         width = 15)
+
+# 006 Rank vs number of ratings
+plot <- games %>% 
+  ggplot(aes(x = log10(usersrated), y = Rank)) +
+  geom_point(aes(colour = Rank), alpha = 0.3) + 
+  scale_color_gradient(low = orange, high = purple) +
+  labs(title = 'Does the number of user ratings influence the final rank?',
+       subtitle = 'Jaws distribution',
+       x = 'Log 10 of the number of ratings ',
+       y = 'Overall rank') +
+  theme(legend.position = 'none') +
+  scale_y_reverse()
+
+plot %>% 
+  ggsave('006.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         height = 7,
+         width = 15)
+
+
+
+# Add something with ratings
+# Use  geom_point(shape = ".")
+
 
 
 
