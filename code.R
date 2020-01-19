@@ -140,6 +140,71 @@ games$isThematic <- as.integer( !is.na(games$Thematic_Rank) )
 games$isWarGame <- as.integer( !is.na(games$War_Game_Rank) )
 
 
+# Convert category ranks to quantiles
+games$quantileAbstract <- games %>%
+  .$Abstract_Rank / max(games$Abstract_Rank, na.rm = TRUE)
+
+games$quantileChildrens <- games %>%
+  .$Childrens_Rank / max(games$Childrens_Rank, na.rm = TRUE)
+
+games$quantileFamily <- games %>%
+  .$Family_Rank / max(games$Family_Rank, na.rm = TRUE)
+
+games$quantileParty <- games %>%
+  .$Party_Rank / max(games$Party_Rank, na.rm = TRUE)
+
+games$quantileStrategy <- games %>%
+  .$Strategy_Rank / max(games$Strategy_Rank, na.rm = TRUE)
+
+games$quantileThematic <- games %>%
+  .$Thematic_Rank / max(games$Thematic_Rank, na.rm = TRUE)
+
+games$quantileWarGame <- games %>%
+  .$War_Game_Rank / max(games$War_Game_Rank, na.rm = TRUE)
+
+
+# Find the primary category
+# How? By the lowest quantile, eg. the most important in this catergory
+find_lowest_quantile <- function(row, output) {
+  abstract = row["quantileAbstract"]
+  family = row["quantileChildrens"]
+  child = row["quantileFamily"]
+  party = row["quantileParty"]
+  strategy = row["quantileStrategy"]
+  thematic = row["quantileThematic"]
+  war = row["quantileWarGame"]
+  
+  lowest <- min(
+    abstract,
+    family,
+    child,
+    party,
+    strategy,
+    thematic,
+    war,
+    na.rm = TRUE)
+  
+  case_when(
+    lowest == abstract ~ 'Abstract',
+    lowest == family ~ 'Family',
+    lowest == child ~ "Children",
+    lowest == party ~ 'Party',
+    lowest == strategy ~ 'Strategy',
+    lowest == thematic ~ 'Thematic',
+    lowest == war ~ 'War Game',
+    lowest == NA ~ 'Other'
+  ) %>%
+    return()
+}
+
+# Takes a while
+games$cat <- games %>%
+  apply(1, find_lowest_quantile) %>%
+  as.factor()
+
+# A nice distribution
+games$cat %>% table()
+
 # Questions:
 # Does time increase with complexity?
 # Rank vs popularity
