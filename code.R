@@ -136,9 +136,21 @@ games$isAbstract <- as.integer( !is.na(games$Abstract_Rank) )
 games$isChildrens <- as.integer( !is.na(games$Childrens_Rank) )
 games$isFamily <- as.integer( !is.na(games$Family_Rank) )
 games$isParty <- as.integer( !is.na(games$Party_Rank) )
+games$isStrategy <- as.integer( !is.na(games$Strategy_Rank) )
 games$isThematic <- as.integer( !is.na(games$Thematic_Rank) )
 games$isWarGame <- as.integer( !is.na(games$War_Game_Rank) )
 
+# Some overlap between categories
+a <- games %>%
+  group_by(isAbstract,
+           isChildrens,
+           isFamily,
+           isParty,
+           isStrategy,
+           isThematic,
+           isWarGame) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
 
 # Convert category ranks to quantiles
 games$quantileAbstract <- games %>%
@@ -211,6 +223,10 @@ games$cat %>% table()
 # Rank vs popularity
 
 
+
+
+
+
 # 001 - Lets look at the dataset
 games %>%
   select( "Rank",
@@ -260,6 +276,8 @@ plot %>%
 
 
 
+
+
 # 002 - Boardgames per year
 plot <- games %>%
   ggplot(aes(x = yearpublished)) +
@@ -277,6 +295,7 @@ plot %>%
 
 
 
+
 # 003 - Average ratings vs year (>2009)
 plot <- games %>% 
   filter(yearpublished > 2009) %>%
@@ -289,6 +308,8 @@ plot <- games %>%
 plot %>% animate(width = 1920, height = 1080)
 
 anim_save('003.gif', path = paste0(getwd(), '/plots'))
+
+
 
 
 
@@ -313,6 +334,8 @@ plot %>%
 
 
 
+
+
 # 005 - Rank vs average ratings
 plot <- games %>% 
   ggplot(aes(x = Ratings_average, y = Rank)) +
@@ -332,6 +355,10 @@ plot %>%
          height = 7,
          width = 15)
 
+
+
+
+
 # 006 Rank vs number of ratings
 plot <- games %>% 
   ggplot(aes(x = log10(usersrated), y = Rank)) +
@@ -350,6 +377,8 @@ plot %>%
          path = paste0(getwd(), '/plots'),
          height = 7,
          width = 15)
+
+
 
 
 
