@@ -357,8 +357,6 @@ plot %>%
 
 
 
-
-
 # 006 Rank vs number of ratings
 plot <- games %>% 
   ggplot(aes(x = log10(usersrated), y = Rank)) +
@@ -430,21 +428,91 @@ games %>%
 
 
 
+# 008 Wishing vs rank
+plot <- games %>%
+  filter(wishing > 10) %>%
+  ggplot(aes(x = log10(wishing), y = Rank)) +
+  geom_point(aes(colour = Rank), alpha = 0.3) + 
+  geom_smooth(color = purple) + 
+  scale_color_gradient(low = orange, high = purple) +
+  labs(title = 'Does the number of user wishlisting influence the final rank?',
+       subtitle = 'Removed obeservations with < 10 users',
+       x = 'Log 10 of the number of users wishlisting',
+       y = 'Overall rank') +
+  theme(legend.position = 'none') +
+  scale_y_reverse()
 
+plot %>% 
+  ggsave('008.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         width = 14,
+         height = 13)
+
+
+
+
+
+
+# 009 - what does not influence 
+# % of written comments
+plot <- games %>%
+  filter(numcomments / usersrated < 1) %>% 
+  ggplot(aes(x = numcomments / usersrated , y = Rank)) +
+  geom_point(aes(colour = Rank), alpha = 0.5) + 
+  scale_color_gradient(low = orange, high = purple) +
+  labs(title = '% of ratings with written reviews',
+       x = 'Number of comments / Number of ratings',
+       y = 'Overall rank') +
+  theme(legend.position = 'none') +
+  scale_y_reverse()
+
+plot %>% 
+  ggsave('009-01.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         width = 8,
+         height = 9)
+
+
+# Std dev 
+plot <- games %>%
+  ggplot(aes(x = Ratings_std_dev, y = Rank))+
+  geom_point(aes(colour = Rank), alpha = 0.5) + 
+  scale_color_gradient(low = orange, high = purple) +
+  labs(title = 'How controversial the game is',
+       x = 'Standard deviation of ratings',
+       y = 'Overall rank') +
+  theme(legend.position = 'none') +
+  scale_y_reverse()
+
+plot %>% 
+  ggsave('009-02.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         width = 8,
+         height = 9)
+
+
+
+
+
+####### to be used
+# Distribution of reviews
+reviews %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(breaks = 0:10)
+
+
+games %>%
+  filter(Ratings_std_dev > 0.75,
+         Ratings_std_dev < 2.5) %>%
+  ggplot(aes(x = Ratings_std_dev, y = Rank)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) + 
+  scale_fill_gradient(high = orange, low = purple)
 
 
 # Add something with ratings
 # Use  geom_point(shape = ".")
-
-
-
-
-
-
-
-
-
-
-
-
-
