@@ -389,24 +389,51 @@ plot %>%
 
 
 
-# 
-plot <- games %>% 
-  filter(yearpublished > 1999,
-         Complexity > 0.5) %>%
-  ggplot(aes(x = Complexity)) +
-  geom_histogram(color = pink, fill = pink, alpha = 0.5) +  
-  labs(title = 'Year: {floor(frame_time)}', x = 'Complexity', y = 'Count') +
-  transition_time(yearpublished) +
-  ease_aes('linear') 
+# 007 rank vs category
+games$isTop <- ifelse(games$Rank < 300, 1, 0)
 
-plot %>% animate(width = 1200, height = 800)
+plot <- games %>%
+  ggplot(aes(x = Rank, fill = cat)) +
+  geom_density(alpha = 0.7, color = NA) + 
+  facet_wrap('cat') + 
+  scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051", "#FF5A5F", "#FFB400", "#007A87")) +
+  theme(legend.position = 'none') +
+  labs(title = 'Does the main category of the game infuence the rank?',
+       subtitle = 'All games',
+       x = 'Rank (lower is better)',
+       y = 'Density')
 
-anim_save('003.gif', path = paste0(getwd(), '/plots'))
+plot %>% 
+  ggsave('007-01.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         width = 14,
+         height = 13)
+
+plot <- games %>%
+  filter(isTop == 1) %>%
+  ggplot(aes(x = Rank, fill = cat)) +
+  geom_histogram(alpha = 0.7, color = NA, bins = 30) + 
+  facet_wrap('cat') + 
+  scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051", "#FF5A5F", "#FFB400", "#007A87")) +
+  theme(legend.position = 'none') +
+  labs(title = 'Does the main category of the game infuence the rank?',
+       subtitle = 'Top 300 games',
+       x = 'Rank (lower is better)',
+       y = 'Count')
+
+plot %>% 
+  ggsave('007-02.jpg', 
+         . , 
+         path = paste0(getwd(), '/plots'),
+         width = 14,
+         height = 13)
 
 
-
-
-
+# See the top 1% of abstract games, and their rank
+games %>%
+  filter(quantileAbstract < 0.01 ) %>%
+  {paste0(.$name, ' ' , .$Rank)}
 
 
 
