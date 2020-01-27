@@ -499,9 +499,9 @@ plot %>%
 
 ####### to be used
 # Distribution of reviews
-reviews %>%
-  ggplot(aes(x = rating)) +
-  geom_histogram(breaks = 0:10)
+#reviews %>%
+#  ggplot(aes(x = rating)) +
+#  geom_histogram(breaks = 0:10)
 
 
 games %>%
