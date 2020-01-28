@@ -317,7 +317,10 @@ plot <- games %>%
   transition_time(yearpublished) +
   ease_aes('linear') 
 
-plot %>% animate(width = 1920, height = 1080)
+animate(plot, 
+        width = 1920,
+        height = 1080,
+        renderer = gifski_renderer())
 
 anim_save('003.gif', path = paste0(getwd(), '/plots'))
 
