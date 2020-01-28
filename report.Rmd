@@ -68,6 +68,7 @@ options(scipen=999) #avoiding e10 notation
 
 ## Importing the data
 Some facts about the dataset: 
+
 * There are 17 000 board games scrapped from Board Game Geek.
 * All games have > 30 reviews.
 * 13 000 games are not included in the dataset, because they had less than 30 reviews. 
@@ -396,6 +397,7 @@ games %>%
 
 ## What about the number of reviews?
 Log number of reviews is correlated with the rank, but there are some interesting points here: 
+
 * The variance of rank decreases with the number of ratings. 
 * There is a relatively small number of games that have a large number of reviews, but have poor position in the ranking. One theory is that these are the popular games like Monopoly, that do not have a good reputation in the more 'geeky' community
 
