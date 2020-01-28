@@ -120,7 +120,7 @@ games <- games %>%
 # Creat a binned complexity
 games %>%
   ggplot(aes(x = Complexity)) +
-  geom_histogram(bins = 60)
+  geom_histogram(bins = 60, color = orange, fill = orange, alpha = 0.5)
 
 # Values are from 1-5, but there is very little after 4.5
 games$ComplexityBinned <- games$Complexity %>% 
@@ -128,7 +128,13 @@ games$ComplexityBinned <- games$Complexity %>%
     breaks = c(-Inf, 1.5, 2.5, 3.25, Inf),
     labels = c(1, 2, 3, 4))
 
-table(games$ComplexityBinned)
+a <- games$ComplexityBinned %>% 
+  table() %>%
+  as.data.frame()
+
+a[a == 0] <- ''
+
+a
 
 # Create binary variables 
 # A game can have multiple main categories, so we can't create one column
@@ -151,6 +157,12 @@ a <- games %>%
            isWarGame) %>%
   summarise(n = n()) %>%
   arrange(desc(n))
+
+
+
+a[a == 0] <- ''
+
+a
 
 # Convert category ranks to quantiles
 games$quantileAbstract <- games %>%

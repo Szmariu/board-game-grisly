@@ -1,9 +1,24 @@
 ---
 title: "Board Game Extravaganza"
 author: "Kornel Krysiak & Michał Szałański"
-date: "27 01 2020"
 output: html_document
 ---
+
+<center>!
+[](https://pbs.twimg.com/media/EBURssOXkAAdGCs.jpg)
+</center>
+
+# Background
+Board Game Geek is the most popular website aggregating all board games ever published, as well as all the addons. 
+For many games when you do a Google Search, the BGG comes in TOP 5 results, frequently as the first spot.
+This means that the when someone tries to find out if a particular game is good, they frequently land on BGG.
+However, unlike other mediums (books, movies etc.) the reviews on BGG do not represent the generic population. 
+Because the website is targeted to enthusiasts, a significant portion of grades are from only a (geeky) part of the gaming community.
+
+# Goal of the paper
+Since reviews on BGG are mostly prepared by enthusiasts, but are used to drive buying decisions of the general population, 
+we want to see what it takes to achieve a favorable position in the general ranking. Are some genres more favored (e.g. strategy/war games)? Does complexity matter?
+Are controversial games more, or less popular?
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(fig.align = "center")
@@ -13,9 +28,10 @@ knitr::opts_chunk$set(fig.width = 16)
 knitr::opts_chunk$set(fig.height = 9)
 ```
 
+## Importing the libraries 
+We start with the standard libraries (tidyverse, ggplot2) and add some interesting extensions. 
 
 ```{r, message = FALSE}
-### Libraries
 library(tidyverse)
 library(ggplot2)
 library(ggthemes)
@@ -28,6 +44,7 @@ library(ggtech) # For the airbnb theme
 library(extrafont) # To add the font for Airbnb theme
 library(GGally) # Grapihical correlogram
 library(knitr) # Nice tables-kables
+library(kableExtra)
 
 # Download this fonts and install manually
 # https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Medium%203.46.45%20PM.ttf
@@ -49,8 +66,16 @@ purple = "#7B0051"
 options(scipen=999) #avoiding e10 notation
 ```
 
+## Importing the data
+Some facts about the dataset: 
+- There are 17 000 board games scrapped from Board Game Geek.
+- All games have > 30 reviews.
+- 13 000 games are not included in the dataset, because they had less than 30 reviews. 
+- the second dataset consists of 13 000 000 reviews, each with a number and optionally a comment.
+- Source: https://www.kaggle.com/jvanelteren/boardgamegeek-reviews
+- Collected in 2019.
+
 ```{r data_import, cache = TRUE, message = FALSE}
-### Import data
 reviews <- 'data/bgg-13m-reviews.csv' %>%
   read_csv()
 
@@ -58,8 +83,11 @@ games <- 'data/games_detailed_info.csv' %>%
   read_csv()
 ```
 
+## Formating the data 
+### Renaming the variables
+We need to drop some columns and rename others to make life easier with ggplot.
+
 ```{r data_format}
-### Format the data 
 # Drop the index
 reviews <- reviews %>% 
   select(-X1)
@@ -105,8 +133,10 @@ games <- games %>%
   )
 ```
 
-```{r complexity_binned}
-# Basic filters
+### Removing outliers 
+There are some 'joke' games, e.g. a war game that takes 1 500 hours to complete (The Campaign for North Africa). 
+
+```{r remove_outliers}
 # Lets remove some outliers to make life easier
 # Some outliers are ok, eg. for most popular games the "wishing" will be very high
 games <- games %>% 
@@ -115,21 +145,36 @@ games <- games %>%
          maxplaytime < 600,
          maxplaytime < 600,
          playingtime < 600)
+```
 
-# Creat a binned complexity
+## Adding new variables 
+### Binned complexity
+For each game, the participants can vote on the compelxity rating (from 1 to 5). These votes are later averaged and presented as a single score.
+We want to bin this variable, to make plotting easier. We dropped the 5th cattegory, becuase only a few games have a score of > 4.25.
+
+```{r complexity_binned}
 games %>%
   ggplot(aes(x = Complexity)) +
-  geom_histogram(bins = 60)
+  geom_histogram(bins = 60, color = orange, fill = orange, alpha = 0.5) +
+  labs(title = 'Distribution on average complexity', x = 'Complexity', y = 'Count')
 
-# Values are from 1-5, but there is very little after 4.5
+# Values are from 1-5, but there is very little after 4.25
 games$ComplexityBinned <- games$Complexity %>% 
   cut(
     breaks = c(-Inf, 1.5, 2.5, 3.25, Inf),
     labels = c(1, 2, 3, 4))
 
-a <- table(games$ComplexityBinned)
-kable(a)
+a <- games$ComplexityBinned %>% 
+  table()
+
+kable(a, col.names = c('Complexity rating', 'Number of games')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive"), full_width = F)
+
 ```
+
+### Binary categories
+In addition to the main ranking, BGG proviedes additional ratings for some main categories.
+We want to see if there is some overlaping between this rankings. 
 
 ```{r binary_var}
 # Create binary variables 
@@ -154,9 +199,24 @@ a <- games %>%
   summarise(n = n()) %>%
   arrange(desc(n))
 
-kable(a)
+a[a == 0] <- ''
+
+kable(a, col.names = c('Abstract',
+                       'Children',
+                       'Family',
+                       'Party',
+                       'Strategy',
+                       'Thematic', 
+                       'War game',
+                       'Number of games')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F)
 ```
 
+There is - this creates a challange. How to choose a main category for each game?
+
+## Determining the main category
+### Creating quantiles for each ranking
+For each game we create a quantile rank - 0.01 means that the game is in top 1% in the category. 
 ```{r cat_quantiles}
 # Convert category ranks to quantiles
 games$quantileAbstract <- games %>%
@@ -180,6 +240,10 @@ games$quantileThematic <- games %>%
 games$quantileWarGame <- games %>%
   .$War_Game_Rank / max(games$War_Game_Rank, na.rm = TRUE)
 ```
+
+### Finding the main category
+To find the main category of the game, we look at all the quantiles and choose the lowest one. 
+Our logic is that it is much more significant if the game is 5th in ranking that has 100 games, than in one that has 1000. 
 
 ```{r find_primary_cat}
 # Find the primary category
@@ -225,10 +289,15 @@ games$cat <- games %>%
 
 # A nice distribution, a lot of other 
 a <- games$cat %>% table()
-kable(a)
+kable(a, col.names = c('Category',
+                       'Number of games')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F)
 ```
 
-```{r multi_plot, cache = TRUE, message = FALSE}
+# Let's try to find out how to get a high position in the BGG ranking
+## First, a quick look at the data 
+This plot will help us choose next steps. From the graphs we can see, that in some situations we'll need to use log(x). 
+```{r multi_plot, cache = TRUE, message = FALSE, echo = FALSE}
 my_dens <- function(data, mapping, ...) {
   ggplot(data = data, mapping = mapping) +
     geom_density_ridges(aes(y = games$ComplexityBinned, fill = games$ComplexityBinned), scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA ) + 
@@ -259,7 +328,11 @@ games %>%
   labs(title = '')
 ```
 
-```{r}
+## Are there more games each year? 
+Definetly.   
+Compared to 2000, the number of games published in 2019 nearly tripled. The market has never been so big and so competetive. 
+
+```{r echo = FALSE}
 # 002 - Boardgames per year
 games %>%
   ggplot(aes(x = yearpublished)) +
@@ -268,7 +341,12 @@ games %>%
 
 ```
 
-```{r animation, cache = TRUE}
+## But, are new games better? 
+It would certanly seem so. The ratings are quite stable for older games, but they start to increase if we go 3-4 years back. 
+Notice an interesting pattern - the standard deviation of newer games is bigger. This may be due to the fact than newer games have fewer reviews. 
+There also is an interesting 'preorder hype' effect. This dataset is from 2019, and games from 2020 have significantly higher scores. 
+
+```{r animation, cache = TRUE, echo = FALSE}
 # 003 - Average ratings vs year (>2009)
 plot <- games %>% 
   filter(yearpublished > 2009) %>%
@@ -281,7 +359,12 @@ plot <- games %>%
 plot %>% animate(width = 700, height = 300)
 ```
 
-```{r message = FALSE}
+## Board Game Geek is quite a „nerdy” place.
+## Do less complex, „party” games get lower scores?
+
+Yes. Simple party games have an average score of 6, while the most complex games have a score of 7.5. This is a hint of a pattern that we'll analise further. 
+
+```{r message = FALSE, echo = FALSE}
 games %>%
   ggplot(aes(x = Ratings_average, y = ComplexityBinned, fill = ComplexityBinned)) +
   geom_density_ridges(scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA) + 
@@ -293,7 +376,7 @@ games %>%
        fill = 'Complexity')
 ```
 
-```{r}
+```{r echo = FALSE}
 games %>% 
   ggplot(aes(x = Ratings_average, y = Rank)) +
   geom_point(aes(colour = Rank), alpha = 0.2) +
@@ -306,7 +389,7 @@ games %>%
   scale_y_reverse()
 ```
 
-```{r}
+```{r echo = FALSE}
 games %>% 
   ggplot(aes(x = log10(usersrated), y = Rank)) +
   geom_point(aes(colour = Rank), alpha = 0.3) + 
@@ -319,7 +402,7 @@ games %>%
   scale_y_reverse()
 ```
 
-```{r}
+```{r echo = FALSE}
 # 007 rank vs category
 games$isTop <- ifelse(games$Rank < 300, 1, 0)
 
@@ -335,7 +418,7 @@ games %>%
        y = 'Density')
 ```
 
-```{r}
+```{r echo = FALSE}
 games %>%
   filter(isTop == 1) %>%
   ggplot(aes(x = Rank, fill = cat)) +
@@ -349,15 +432,7 @@ games %>%
        y = 'Count')
 ```
 
-```{r}
-# See the top 1% of abstract games, and their rank
-a <- games %>%
-  filter(quantileAbstract < 0.01 ) %>%
-  {paste0(.$name, ' ' , .$Rank)}
-kable(a)
-```
-
-```{r message = FALSE}
+```{r message = FALSE, echo = FALSE}
 # 008 Wishing vs rank
 games %>%
   filter(wishing > 10) %>%
@@ -373,7 +448,7 @@ games %>%
   scale_y_reverse()
 ```
 
-```{r}
+```{r echo = FALSE}
 # 009 - what does not influence 
 # % of written comments
 games %>%
@@ -388,7 +463,7 @@ games %>%
   scale_y_reverse()
 ```
 
-```{r}
+```{r echo = FALSE}
 # Std dev 
 games %>%
   ggplot(aes(x = Ratings_std_dev, y = Rank))+
@@ -401,7 +476,7 @@ games %>%
   scale_y_reverse()
 ```
 
-```{r}
+```{r echo = FALSE}
 games %>%
   filter(Ratings_std_dev > 0.75,
          Ratings_std_dev < 2.5) %>%
