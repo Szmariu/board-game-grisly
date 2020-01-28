@@ -4,20 +4,20 @@ author: "Kornel Krysiak & Michał Szałański"
 output: html_document
 ---
 
-<center>!
-[](https://pbs.twimg.com/media/EBURssOXkAAdGCs.jpg)
+<center>
+![](https://pbs.twimg.com/media/EBURssOXkAAdGCs.jpg)
 </center>
 
 # Background
-Board Game Geek is the most popular website aggregating all board games ever published, as well as all the addons. 
+Board Game Geek is the most popular website aggregating all board games ever published, as well as all the addons. <br>
 For many games when you do a Google Search, the BGG comes in TOP 5 results, frequently as the first spot.
-This means that the when someone tries to find out if a particular game is good, they frequently land on BGG.
+This means that the when someone tries to find out if a particular game is good, they frequently land on BGG. <br>
 However, unlike other mediums (books, movies etc.) the reviews on BGG do not represent the generic population. 
 Because the website is targeted to enthusiasts, a significant portion of grades are from only a (geeky) part of the gaming community.
 
 # Goal of the paper
 Since reviews on BGG are mostly prepared by enthusiasts, but are used to drive buying decisions of the general population, 
-we want to see what it takes to achieve a favorable position in the general ranking. Are some genres more favored (e.g. strategy/war games)? Does complexity matter?
+we want to see what it takes to achieve a favorable position in the general ranking.<br> Are some genres more favored (e.g. strategy/war games)? Does complexity matter?
 Are controversial games more, or less popular?
 
 ```{r setup, include=FALSE}
@@ -68,12 +68,12 @@ options(scipen=999) #avoiding e10 notation
 
 ## Importing the data
 Some facts about the dataset: 
-- There are 17 000 board games scrapped from Board Game Geek.
-- All games have > 30 reviews.
-- 13 000 games are not included in the dataset, because they had less than 30 reviews. 
-- the second dataset consists of 13 000 000 reviews, each with a number and optionally a comment.
-- Source: https://www.kaggle.com/jvanelteren/boardgamegeek-reviews
-- Collected in 2019.
+* There are 17 000 board games scrapped from Board Game Geek.
+* All games have > 30 reviews.
+* 13 000 games are not included in the dataset, because they had less than 30 reviews. 
+* the second dataset consists of 13 000 000 reviews, each with a number and optionally a comment.
+* Source: https://www.kaggle.com/jvanelteren/boardgamegeek-reviews
+* Collected in 2019.
 
 ```{r data_import, cache = TRUE, message = FALSE}
 reviews <- 'data/bgg-13m-reviews.csv' %>%
@@ -149,7 +149,7 @@ games <- games %>%
 
 ## Adding new variables 
 ### Binned complexity
-For each game, the participants can vote on the compelxity rating (from 1 to 5). These votes are later averaged and presented as a single score.
+For each game, the participants can vote on the compelxity rating (from 1 to 5). These votes are later averaged and presented as a single score.<br>
 We want to bin this variable, to make plotting easier. We dropped the 5th cattegory, becuase only a few games have a score of > 4.25.
 
 ```{r complexity_binned}
@@ -173,7 +173,7 @@ kable(a, col.names = c('Complexity rating', 'Number of games')) %>%
 ```
 
 ### Binary categories
-In addition to the main ranking, BGG proviedes additional ratings for some main categories.
+In addition to the main ranking, BGG proviedes additional ratings for some main categories.<br>
 We want to see if there is some overlaping between this rankings. 
 
 ```{r binary_var}
@@ -243,7 +243,7 @@ games$quantileWarGame <- games %>%
 ```
 
 ### Finding the main category
-To find the main category of the game, we look at all the quantiles and choose the lowest one. 
+To find the main category of the game, we look at all the quantiles and choose the lowest one. <br>
 Our logic is that it is much more significant if the game is 5th in ranking that has 100 games, than in one that has 1000. 
 
 ```{r find_primary_cat}
@@ -330,7 +330,7 @@ games %>%
 ```
 
 ## Are there more games each year? 
-Definetly.   
+Definetly.   <br>
 Compared to 2000, the number of games published in 2019 nearly tripled. The market has never been so big and so competetive. 
 
 ```{r}
@@ -342,8 +342,8 @@ games %>%
 ```
 
 ## But, are new games better? 
-It would certanly seem so. The ratings are quite stable for older games, but they start to increase if we go 3-4 years back. 
-Notice an interesting pattern - the standard deviation of newer games is bigger. This may be due to the fact than newer games have fewer reviews. 
+It would certanly seem so. The ratings are quite stable for older games, but they start to increase if we go 3-4 years back. <br>
+Notice an interesting pattern - the standard deviation of newer games is bigger. This may be due to the fact than newer games have fewer reviews. <br>
 There also is an interesting 'preorder hype' effect. This dataset is from 2019, and games from 2020 have significantly higher scores. 
 
 ```{r animation, cache = TRUE}
@@ -377,8 +377,8 @@ games %>%
 ```
 
 ## How exactly is the rank determined? Does average rating matter?
-Rank vs rating has an interesting distribution - there are some clear patterns.
-It seems that for a high rank, the average rating has to be quite high. However, just having high reviews does not guarantee a good position. 
+Rank vs rating has an interesting distribution - there are some clear patterns.<br>
+It seems that for a high rank, the average rating has to be quite high. However, just having high reviews does not guarantee a good position. <br>
 There is a very corious contraction near the ~ 6.0 average. This is a simmilar score to the scores of very low complexity games. 
 
 ```{r}
@@ -396,8 +396,8 @@ games %>%
 
 ## What about the number of reviews?
 Log number of reviews is correlated with the rank, but there are some interesting points here: 
-- The variance of rank decreases with the number of ratings. 
-- There is a relatively small number of games that have a large number of reviews, but have poor position in the ranking. One theory is that these are the popular games like Monopoly, that do not have a good reputation in the more 'geeky' community
+* The variance of rank decreases with the number of ratings. 
+* There is a relatively small number of games that have a large number of reviews, but have poor position in the ranking. One theory is that these are the popular games like Monopoly, that do not have a good reputation in the more 'geeky' community
 
 ```{r}
 games %>% 
@@ -414,7 +414,7 @@ games %>%
 
 ## Maybe the category influences the rank?
 ### All games
-For all games – yes. Strategy is highly favored, while family games are disfavored. 
+For all games – yes. Strategy is highly favored, while family games are disfavored. <br>
 Generally speaking the choice of category will influence the rank in a significant way. 
 
 ```{r}
@@ -450,7 +450,8 @@ games %>%
 ```
 
 ## What about popularity? 
-By this we mean people adding games to their wishlists. There is a strong correlation between these two variables. 
+By this we mean people adding games to their wishlists. <br>
+There is a strong correlation between these two variables. 
 However, we beleive the causality here may be reversed. A high position in the ranking will boosts the popularity and sales of a game. 
 
 ```{r message = FALSE}
@@ -469,8 +470,8 @@ games %>%
 ```
 
 ## Finally, what variables do not influence the ranking?
-### The % of written reviews 
-Generally speaking, it doesn't matter if the game has mostly textual reviews, or just numerical grades. 
+### The percent of written reviews 
+Generally speaking, it doesn't matter if the game has mostly textual reviews, or just numerical grades. <br>
 There is some pattern in the very top part of the ranking. However, we beleive that this is due to the number of reviews. 
 
 ```{r}
@@ -523,5 +524,19 @@ games %>%
 
 
 # Conclusions
+## Representativeness
+Coming back to the point made in the introduction. The results confirmed that the poeople who review games on Board Game Geek are a specific part of the whole population. <br>
+In normal circumstances, this would create a problem, because one cannot generalize on the population from baised data. <br>
+However, this wasn't our goal. <br>
+We wanted to analize what factors influence the position in the Board Game Geek ranking system
+with the idea that this would influence the purchasing decisions the same way as searching for reviews on Amazon does. 
+And since the whole population uses BGG to check game reviews, we beleive we can use this data for this porpouse. 
 
+## Suggestions
+By analysing the 17 000 board games from the Board Game Geek database, we were able to extract some insights that could be useful to designers and publisers preparing their own board games.
+To maximize the chances of a game acheiving a favourable position in the ranking, several factors have to be considered. <br>
+The most important one is the genre of the game. We strongly recommend creating a strategy game, maybe with some thematic elements. It should be a complex game, recquiring a long time to play. <br>
+Creating 'hype' before publishing is advised, as this will create a first wave of positive reviews, even before the game is actually published. <br>
+Number of people wishlisting the game is also a very important factor. However, we do not advise using shady practises such as creating fake accounts. 
+Such a practise runs the risk of receiving a ban from BGG, which could have negative influence on the sales. 
 
