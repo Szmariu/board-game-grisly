@@ -83,7 +83,7 @@ games <- 'data/games_detailed_info.csv' %>%
   read_csv()
 ```
 
-## Formating the data 
+## Formatting the data 
 ### Renaming the variables
 We need to drop some columns and rename others to make life easier with ggplot.
 
@@ -149,8 +149,8 @@ games <- games %>%
 
 ## Adding new variables 
 ### Binned complexity
-For each game, the participants can vote on the compelxity rating (from 1 to 5). These votes are later averaged and presented as a single score.<br>
-We want to bin this variable, to make plotting easier. We dropped the 5th cattegory, becuase only a few games have a score of > 4.25.
+For each game, the participants can vote on the complexity rating (from 1 to 5). These votes are later averaged and presented as a single score.<br>
+We want to bin this variable, to make plotting easier. We dropped the 5th category, because only a few games have a score of > 4.25.
 
 ```{r complexity_binned}
 games %>%
@@ -173,8 +173,8 @@ kable(a, col.names = c('Complexity rating', 'Number of games')) %>%
 ```
 
 ### Binary categories
-In addition to the main ranking, BGG proviedes additional ratings for some main categories.<br>
-We want to see if there is some overlaping between this rankings. 
+In addition to the main ranking, BGG provides additional ratings for some main categories.<br>
+We want to see if there is some overlapping between this rankings. 
 
 ```{r binary_var}
 # Create binary variables 
@@ -213,7 +213,7 @@ kable(a, col.names = c('Abstract',
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F)
 ```
 
-There is - this creates a challange. How to choose a main category for each game?
+There is - this creates a challenge. How to choose a main category for each game?
 
 ## Determining the main category
 ### Creating quantiles for each ranking
@@ -330,8 +330,8 @@ games %>%
 ```
 
 ## Are there more games each year? 
-Definetly.   <br>
-Compared to 2000, the number of games published in 2019 nearly tripled. The market has never been so big and so competetive. 
+Definitely.   <br>
+Compared to 2000, the number of games published in 2019 nearly tripled. The market has never been so big and so competitive. 
 
 ```{r}
 games %>%
@@ -342,7 +342,7 @@ games %>%
 ```
 
 ## But, are new games better? 
-It would certanly seem so. The ratings are quite stable for older games, but they start to increase if we go 3-4 years back. <br>
+It would certainly seem so. The ratings are quite stable for older games, but they start to increase if we go 3-4 years back. <br>
 Notice an interesting pattern - the standard deviation of newer games is bigger. This may be due to the fact than newer games have fewer reviews. <br>
 There also is an interesting 'preorder hype' effect. This dataset is from 2019, and games from 2020 have significantly higher scores. 
 
@@ -362,7 +362,7 @@ plot %>% animate(width = 900,
 
 ## Board Game Geek is quite a „nerdy” place. Do less complex, „party” games get lower scores?
 
-Yes. Simple party games have an average score of 6, while the most complex games have a score of 7.5. This is a hint of a pattern that we'll analise further. 
+Yes. Simple party games have an average score of 6, while the most complex games have a score of 7.5. This is a hint of a pattern that we'll analyse further. 
 
 ```{r message = FALSE}
 games %>%
@@ -370,7 +370,7 @@ games %>%
   geom_density_ridges(scale = 3, rel_min_height = 0.01, alpha = 0.7, color = NA) + 
   scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051")) +
   scale_x_continuous(limits = c(3, 9.3)) +
-  labs(title = 'Does the complexity of the game infuence the ratings?',
+  labs(title = 'Does the complexity of the game influence the ratings?',
        x = 'Ratings',
        y = 'Complexity of the game',
        fill = 'Complexity')
@@ -379,7 +379,7 @@ games %>%
 ## How exactly is the rank determined? Does average rating matter?
 Rank vs rating has an interesting distribution - there are some clear patterns.<br>
 It seems that for a high rank, the average rating has to be quite high. However, just having high reviews does not guarantee a good position. <br>
-There is a very corious contraction near the ~ 6.0 average. This is a simmilar score to the scores of very low complexity games. 
+There is a very curious contraction near the ~ 6.0 average. This is a similar score to the scores of very low complexity games. 
 
 ```{r}
 games %>% 
@@ -426,14 +426,14 @@ games %>%
   facet_wrap('cat') + 
   scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051", "#FF5A5F", "#FFB400", "#007A87")) +
   theme(legend.position = 'none') +
-  labs(title = 'Does the main category of the game infuence the rank?',
+  labs(title = 'Does the main category of the game influence the rank?',
        subtitle = 'All games',
        x = 'Rank (lower is better)',
        y = 'Density')
 ```
 
 ### Top 1% of games
-The top 1% is dominated by strategy games. Other categories have only a few positions, with the exception of thematic games. Suprisingly, there are some childer games too. 
+The top 1% is dominated by strategy games. Other categories have only a few positions, with the exception of thematic games. Surprisingly, there are some children's games too. 
 
 ```{r}
 games %>%
@@ -443,7 +443,7 @@ games %>%
   facet_wrap('cat') + 
   scale_fill_manual(values = c("#FF5A5F", "#FFB400", "#007A87", "#FFAA91", "#7B0051", "#FF5A5F", "#FFB400", "#007A87")) +
   theme(legend.position = 'none') +
-  labs(title = 'Does the main category of the game infuence the rank?',
+  labs(title = 'Does the main category of the game influence the rank?',
        subtitle = 'Top 300 games',
        x = 'Rank (lower is better)',
        y = 'Count')
@@ -452,7 +452,7 @@ games %>%
 ## What about popularity? 
 By this we mean people adding games to their wishlists. <br>
 There is a strong correlation between these two variables. 
-However, we beleive the causality here may be reversed. A high position in the ranking will boosts the popularity and sales of a game. 
+However, we believe the causality here may be reversed. A high position in the ranking will boosts the popularity and sales of a game. 
 
 ```{r message = FALSE}
 games %>%
@@ -462,7 +462,7 @@ games %>%
   geom_smooth(color = purple) + 
   scale_color_gradient(low = orange, high = purple) +
   labs(title = 'Does the number of user wishlisting influence the final rank?',
-       subtitle = 'Removed obeservations with < 10 users',
+       subtitle = 'Removed observations with < 10 users',
        x = 'Log 10 of the number of users wishlisting',
        y = 'Overall rank') +
   theme(legend.position = 'none') +
@@ -472,7 +472,7 @@ games %>%
 ## Finally, what variables do not influence the ranking?
 ### The percent of written reviews 
 Generally speaking, it doesn't matter if the game has mostly textual reviews, or just numerical grades. <br>
-There is some pattern in the very top part of the ranking. However, we beleive that this is due to the number of reviews. 
+There is some pattern in the very top part of the ranking. However, we believe that this is due to the number of reviews. 
 
 ```{r}
 games %>%
@@ -489,7 +489,7 @@ games %>%
 
 ### How controversial the game is
 We interpret the standard deviation of the ratings to represent how controversial the game is. Higher deviation means more disagreement. 
-Perhaps suprisingly, this has no significant effect on the ranking. 
+Perhaps surprisingly, this has no significant effect on the ranking. 
 
 ```{r}
 games %>%
@@ -503,7 +503,7 @@ games %>%
   scale_y_reverse()
 ```
 
-When we removed the outliers and used a density plot, a pattern emerged. Still, we beleive the effects are not significant, taking into account the deviation. 
+When we removed the outliers and used a density plot, a pattern emerged. Still, we believe the effects are not significant, taking into account the deviation. 
 
 ```{r message = FALSE}
 games %>%
@@ -525,18 +525,18 @@ games %>%
 
 # Conclusions
 ## Representativeness
-Coming back to the point made in the introduction. The results confirmed that the poeople who review games on Board Game Geek are a specific part of the whole population. <br>
-In normal circumstances, this would create a problem, because one cannot generalize on the population from baised data. <br>
+Coming back to the point made in the introduction. The results confirmed that the people who review games on Board Game Geek are a specific part of the whole population. <br>
+In normal circumstances, this would create a problem, because one cannot generalize on the population from biased data. <br>
 However, this wasn't our goal. <br>
-We wanted to analize what factors influence the position in the Board Game Geek ranking system
+We wanted to analyze what factors influence the position in the Board Game Geek ranking system
 with the idea that this would influence the purchasing decisions the same way as searching for reviews on Amazon does. 
-And since the whole population uses BGG to check game reviews, we beleive we can use this data for this porpouse. 
+And since the whole population uses BGG to check game reviews, we believe we can use this data for this purpose. 
 
 ## Suggestions
-By analysing the 17 000 board games from the Board Game Geek database, we were able to extract some insights that could be useful to designers and publisers preparing their own board games.
-To maximize the chances of a game acheiving a favourable position in the ranking, several factors have to be considered. <br>
-The most important one is the genre of the game. We strongly recommend creating a strategy game, maybe with some thematic elements. It should be a complex game, recquiring a long time to play. <br>
+By analyzing the 17 000 board games from the Board Game Geek database, we were able to extract some insights that could be useful to designers and publishers preparing their own board games.
+To maximize the chances of a game achieving a favorable position in the ranking, several factors have to be considered. <br>
+The most important one is the genre of the game. We strongly recommend creating a strategy game, maybe with some thematic elements. It should be a complex game, requiring a long time to play. <br>
 Creating 'hype' before publishing is advised, as this will create a first wave of positive reviews, even before the game is actually published. <br>
-Number of people wishlisting the game is also a very important factor. However, we do not advise using shady practises such as creating fake accounts. 
-Such a practise runs the risk of receiving a ban from BGG, which could have negative influence on the sales. 
+Number of people wishlisting the game is also a very important factor. However, we do not advise using shady practices such as creating fake accounts. 
+Such a practice runs the risk of receiving a ban from BGG, which could have negative influence on the sales. 
 
